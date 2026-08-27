@@ -8,16 +8,16 @@ import { InvestmentSlider } from '@/components/InvestmentSlider';
 import { CurrencyInput } from '@/components/CurrencyInput';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { useFinance } from '@/lib/finance-context';
-import { getRendaFixaTotal } from '@/lib/calculations';
+import { getRecurringTotal } from '@/lib/calculations';
 
 function ConfiguracoesContent() {
   const router = useRouter();
-  const { usuario, updateUsuario, resetAllData } = useFinance();
+  const { usuario, lancamentos, updateUsuario, resetAllData } = useFinance();
   const [confirmResetOpen, setConfirmResetOpen] = useState(false);
 
   if (!usuario) return null; // RouteGuard já garante usuario non-null em runtime; guarda só para o TS.
 
-  const rendaFixaReferencia = getRendaFixaTotal(usuario.rendasRecorrentes);
+  const rendaFixaReferencia = getRecurringTotal(lancamentos, 'renda');
   const tetoGastosAtual = usuario.tetoGastos;
   const tetoAtivo = tetoGastosAtual !== null;
 
