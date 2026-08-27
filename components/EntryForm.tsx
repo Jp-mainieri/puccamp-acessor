@@ -31,6 +31,7 @@ export function EntryForm() {
   const [dataHora, setDataHora] = useState(
     lancamentoExistente ? toDatetimeLocalValue(new Date(lancamentoExistente.data)) : toDatetimeLocalValue(new Date())
   );
+  const [recorrente, setRecorrente] = useState(lancamentoExistente?.recorrente ?? false);
 
   function handleTipoChange(novoTipo: TipoLancamento) {
     setTipo(novoTipo);
@@ -55,7 +56,7 @@ export function EntryForm() {
     event.preventDefault();
     if (valor === '' || !podeSalvar) return;
 
-    const input = { tipo, categoria, valor, data: datetimeLocalValueToIso(dataHora) };
+    const input = { tipo, categoria, valor, data: datetimeLocalValueToIso(dataHora), recorrente };
 
     if (lancamentoExistente) {
       updateLancamento(lancamentoExistente.id, input);
@@ -111,6 +112,19 @@ export function EntryForm() {
           className="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
       </div>
+
+      <label className="flex items-center gap-3 rounded-lg border border-slate-300 px-3 py-2.5">
+        <input
+          type="checkbox"
+          checked={recorrente}
+          onChange={(event) => setRecorrente(event.target.checked)}
+          className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+        />
+        <span className="text-sm text-slate-700">
+          <span className="block font-medium">Lançamento recorrente</span>
+          <span className="block text-xs text-slate-500">Repete todo mês — ex.: salário, aluguel, assinatura.</span>
+        </span>
+      </label>
 
       {ultrapassaTeto && usuario?.tetoGastos != null && (
         <AlertBanner variant="warning">

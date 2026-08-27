@@ -37,6 +37,16 @@ export function getMaiorGastoFixo(gastosRecorrentes: GastoRecorrente[]): GastoRe
   return gastosRecorrentes.reduce((maior, atual) => (atual.valor > maior.valor ? atual : maior));
 }
 
+/** Lançamentos marcados `recorrente` para o tipo dado (qualquer data — representam um compromisso contínuo, não um mês específico). */
+export function getRecurringLancamentos(lancamentos: Lancamento[], tipo: TipoLancamento): Lancamento[] {
+  return lancamentos.filter((l) => l.tipo === tipo && l.recorrente);
+}
+
+/** Soma de todos os lançamentos recorrentes de um tipo — é o equivalente, pós-onboarding, de rendaFixa/gastoFixo. */
+export function getRecurringTotal(lancamentos: Lancamento[], tipo: TipoLancamento): number {
+  return sumValores(getRecurringLancamentos(lancamentos, tipo));
+}
+
 // --- Onboarding -------------------------------------------------------------
 
 export interface OnboardingSummary {
@@ -220,10 +230,8 @@ export interface InvestmentProgress {
 
 export function getInvestmentProgress(usuario: Usuario, lancamentos: Lancamento[]): InvestmentProgress {
   const totalInvestidoMes = getTotalByTipoNoMes(lancamentos, 'investimento');
-  const metaInvestimento = getMetaInvestimento(
-    getRendaFixaTotal(usuario.rendasRecorrentes),
-    usuario.percentualInvestimento
-  );
+  const rendaFixa = getRecurringTotal(lancamentos, 'renda');
+  const metaInvestimento = getMetaInvestimento(rendaFixa, usuario.percentualInvestimento);
   const percentual = metaInvestimento > 0 ? (totalInvestidoMes / metaInvestimento) * 100 : 0;
   return { totalInvestidoMes, metaInvestimento, percentual };
 }

@@ -60,6 +60,10 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<FinanceState>(INITIAL_STATE);
 
   useEffect(() => {
+    // Leitura única e síncrona do localStorage (indisponível durante SSR/prerender) para hidratar
+    // o estado no mount. Não é uma assinatura a uma store externa em mudança contínua — é por isso
+    // que este efeito roda uma vez (deps vazias) e não se encaixa no padrão que a regra abaixo mira.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState({
       usuario: loadUsuario(),
       lancamentos: loadLancamentos(),

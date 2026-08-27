@@ -141,21 +141,30 @@ const INSIGHT_STYLES: Record<OnboardingInsightStatus, string> = {
 
 export function OnboardingWizard() {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
-  const { setUsuario } = useFinance();
+  const { setUsuario, addLancamento } = useFinance();
   const router = useRouter();
   const podeAvancar = canAdvance(state);
 
+  // As rendas/gastos recorrentes coletados nos passos 3/4 viram Lancamento de verdade (recorrente: true)
+  // — assim eles contam para o saldo/gráficos do dashboard e aparecem, editáveis, no extrato.
   function handleFinish() {
     const usuario: Usuario = {
       nome: state.nome.trim(),
       saldoInicial: state.saldoInicial === '' ? 0 : state.saldoInicial,
-      rendasRecorrentes: state.rendasRecorrentes,
-      gastosRecorrentes: state.gastosRecorrentes,
       percentualInvestimento: state.querInvestir ? state.percentualInvestimento : 0,
       tetoGastos: state.temTetoGastos ? state.tetoGastos : null,
       criadoEm: new Date().toISOString(),
     };
     setUsuario(usuario);
+
+    const agora = new Date().toISOString();
+    for (const renda of state.rendasRecorrentes) {
+      addLancamento({ tipo: 'renda', categoria: renda.categoria, valor: renda.valor, data: agora, recorrente: true });
+    }
+    for (const gasto of state.gastosRecorrentes) {
+      addLancamento({ tipo: 'gasto', categoria: gasto.categoria, valor: gasto.valor, data: agora, recorrente: true });
+    }
+
     router.push('/');
   }
 

@@ -1,4 +1,4 @@
-import { ArrowDownCircle, ArrowUpCircle, Pencil, PiggyBank, Trash2 } from 'lucide-react';
+import { ArrowDownCircle, ArrowUpCircle, Pencil, PiggyBank, Repeat, Trash2 } from 'lucide-react';
 import clsx from 'clsx';
 import type { Lancamento } from '@/types';
 import { formatCurrency, formatDateTime } from '@/lib/format';
@@ -23,7 +23,15 @@ export function EntryListItem({ lancamento, onEdit, onDeleteRequest }: EntryList
     <li className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-3">
       <Icon className={clsx('h-8 w-8 shrink-0', visual.className)} aria-hidden="true" />
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-slate-900">{lancamento.categoria}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="truncate text-sm font-medium text-slate-900">{lancamento.categoria}</p>
+          {lancamento.recorrente && (
+            <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
+              <Repeat className="h-2.5 w-2.5" aria-hidden="true" />
+              Recorrente
+            </span>
+          )}
+        </div>
         <p className="text-xs text-slate-500">{formatDateTime(lancamento.data)}</p>
       </div>
       <p className={clsx('shrink-0 text-sm font-semibold', visual.className)}>
